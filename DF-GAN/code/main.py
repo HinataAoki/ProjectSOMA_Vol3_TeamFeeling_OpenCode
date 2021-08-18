@@ -173,8 +173,8 @@ def train(dataloader,netG,netD,text_encoder,optimizerG,optimizerD,state_epoch,ba
                         normalize=True)
 
         if epoch%10==0:
-            torch.save(netG.state_dict(), 'models/%s/netG_%03d.pth' % (cfg.CONFIG_NAME, epoch))
-            torch.save(netD.state_dict(), 'models/%s/netD_%03d.pth' % (cfg.CONFIG_NAME, epoch))       
+            torch.save(netG.state_dict(), '%s/models/%s/netG_%03d.pth' % (colab_directory, cfg.CONFIG_NAME, epoch))
+            torch.save(netD.state_dict(), '%s/models/%s/netD_%03d.pth' % (colab_directory ,cfg.CONFIG_NAME, epoch))       
 
     return count
 
@@ -249,6 +249,14 @@ if __name__ == "__main__":
 
     netG = NetG(cfg.TRAIN.NF, 100).to(device)
     netD = NetD(cfg.TRAIN.NF).to(device)
+    
+    colab_directory = "/content/drive/MyDrive/ProjectSOMA vol.3/workspace/TeamFeeling/Aoki"
+    state_epoch="010"
+    
+    netG.load_state_dict(torch.load(f'{colab_directory}/models/bird/netG_{state_epoch}.pth'))
+    netD.load_state_dict(torch.load(f'{colab_directory}/models/bird/netD_{state_epoch}.pth'))
+
+    state_epoch = int(state_epoch)
 
     text_encoder = RNN_ENCODER(dataset.n_words, nhidden=cfg.TEXT.EMBEDDING_DIM)
     state_dict = torch.load(cfg.TEXT.DAMSM_NAME, map_location=lambda storage, loc: storage)
@@ -258,8 +266,6 @@ if __name__ == "__main__":
     for p in text_encoder.parameters():
         p.requires_grad = False
     text_encoder.eval()    
-
-    state_epoch=0
 
     optimizerG = torch.optim.Adam(netG.parameters(), lr=0.0001, betas=(0.0, 0.9))
     optimizerD = torch.optim.Adam(netD.parameters(), lr=0.0004, betas=(0.0, 0.9))  
@@ -271,7 +277,4 @@ if __name__ == "__main__":
     else:
         
         count = train(dataloader,netG,netD,text_encoder,optimizerG,optimizerD, state_epoch,batch_size,device)
-
-
-
         
