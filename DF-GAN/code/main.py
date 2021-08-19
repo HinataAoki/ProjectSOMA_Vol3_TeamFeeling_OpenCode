@@ -251,7 +251,7 @@ if __name__ == "__main__":
     netD = NetD(cfg.TRAIN.NF).to(device)
     
     colab_directory = "/content/drive/MyDrive/ProjectSOMA vol.3/workspace/TeamFeeling/Aoki"
-    state_epoch="010"
+    state_epoch="020"
     
     netG.load_state_dict(torch.load(f'{colab_directory}/models/bird/netG_{state_epoch}.pth'))
     netD.load_state_dict(torch.load(f'{colab_directory}/models/bird/netD_{state_epoch}.pth'))
