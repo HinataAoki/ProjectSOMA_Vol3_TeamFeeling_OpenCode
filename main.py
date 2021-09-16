@@ -2,6 +2,7 @@ import argparse
 from Record import record
 from MovieToLabel import utils as ml_utils
 from SpeechToLabel import utils as sr_utils
+from TextToImage import utils as ti_utils
 from googletrans import Translator
 
 parser = argparse.ArgumentParser(description='ReCreation GAN') 
@@ -40,4 +41,4 @@ translated_speech_text = translator.translate(generated_text_from_speech, dest="
 print(translated_speech_text)
 
 # テキストから画像を生成
-#generate_image_from_text(generated_text)
+ti_utils.generate_image_from_text(generated_text_from_speech)
