@@ -122,7 +122,7 @@ def movie_to_label(image_path, threshold=0.5):
   ckpt.restore(os.path.join(model_dir, 'ckpt-0')).expect_partial()
   detect_fn = get_model_detection_function(detection_model)
 
-  label_map_path = './models/research/object_detection/data/mscoco_label_map.pbtxt'
+  label_map_path = './object_detection/data/mscoco_label_map.pbtxt'
   label_map = label_map_util.load_labelmap(label_map_path)
   categories = label_map_util.convert_label_map_to_categories(
       label_map,

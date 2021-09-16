@@ -14,6 +14,6 @@ scipy
 torch
 torchvision
 tensorflow
-ffmpeg
+ffmpeg-python
 SpeechRecognition
 googletrans
