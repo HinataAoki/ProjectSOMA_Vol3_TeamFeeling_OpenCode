@@ -3,6 +3,7 @@
 
 import io
 import os
+import cv2
 import glob
 import scipy.misc
 import numpy as np
