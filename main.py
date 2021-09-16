@@ -19,17 +19,25 @@ img_name = args.img_name
 threthold = float(args.threthold)
 
 # 動画を作成する
-record.make_record(path=movie_path)
+print("Start Recording...")
+# record.make_record(path=movie_path)
 
 # 動画から状況を説明するテキストを生成
+print("Start making text from movie...")
 generated_text_from_movie = ml_utils.movie_to_text(movie_path, img_dir="temp", img_name="temp", threthold=0.5)
+print("Generated text from movie is ")
+print(generated_text_from_movie)
 
 # Speech to Text
+print("Start making text from voice...")
 generated_text_from_speech = sr_utils.voice_to_text(movie_path, voice_path)
+print("Generated text from voice is ")
+print(generated_text_from_speech)
 
 # Translate to English
 translator = Translator()
 translated_speech_text = translator.translate(generated_text_from_speech, dest="ja")
+print(translated_speech_text)
 
 # テキストから画像を生成
 #generate_image_from_text(generated_text)
