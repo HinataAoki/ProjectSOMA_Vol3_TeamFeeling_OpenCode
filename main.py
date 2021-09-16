@@ -1,7 +1,7 @@
 import argparse
 from Record import record
 from MovieToLabel import utils as ml_utils
-from SpeechToLabel import sr_utils
+from SpeechToLabel import utils as sr_utils
 from googletrans import Translator
 
 parser = argparse.ArgumentParser(description='ReCreation GAN') 
