@@ -45,7 +45,7 @@ def make_text_from_movie(movie_path, voice_path, img_dir, img_name, threthold):
 
     # Translate to English
     translator = Translator()
-    translated_speech_text = translator.translate(generated_text_from_speech, dest="ja").text
+    translated_speech_text = translator.translate(generated_text_from_speech, dest="en").text
     print(translated_speech_text)
 
     input_text = "There is "
