@@ -161,7 +161,8 @@ class Pars(torch.nn.Module):
         rng = rng.permute(0, 2, 1)
         self.normu = torch.nn.Parameter(rng.cuda().view(1, 8192, 64*64))
         
-    def forward(self):      
+    def forward(self):
+        tau_value = 2.0      
         normu = torch.nn.functional.gumbel_softmax(self.normu.reshape(1,64*64,8192), dim=1, tau=tau_value).view(1, 8192, 64, 64)
         return normu
 

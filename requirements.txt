@@ -16,4 +16,4 @@ torchvision
 tensorflow
 ffmpeg-python
 SpeechRecognition
-googletrans
+googletrans==4.0.0-rc1

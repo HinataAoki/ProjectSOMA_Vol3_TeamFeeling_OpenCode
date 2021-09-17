@@ -11,6 +11,7 @@ from six import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 
 import tensorflow as tf
+from googletrans import Translator
 
 from object_detection.utils import label_map_util
 from object_detection.utils import config_util
@@ -72,7 +73,7 @@ def label_out(classes, scores, label_map_dict ,threshold=0.5):
   for i in range(len(classes)):
     if scores[i] > threshold:
       keys = [k for k, v in label_map_dict.items() if v == classes[i]]
-      print(keys)
+      # print(keys)
       output+=keys
     else:
       break

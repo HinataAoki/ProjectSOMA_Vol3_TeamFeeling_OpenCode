@@ -1,7 +1,7 @@
 import argparse
 from Record import record
 from MovieToLabel import utils as ml_utils
-from SpeechToLabel import utils as sr_utils
+from SpeechToLabel import utils as sl_utils
 from TextToImage import utils as ti_utils
 from googletrans import Translator
 
@@ -31,14 +31,22 @@ print(generated_text_from_movie)
 
 # Speech to Text
 print("Start making text from voice...")
-generated_text_from_speech = sr_utils.voice_to_text(movie_path, voice_path)
+generated_text_from_speech = sl_utils.voice_to_text(movie_path, voice_path)
 print("Generated text from voice is ")
 print(generated_text_from_speech)
 
 # Translate to English
 translator = Translator()
-translated_speech_text = translator.translate(generated_text_from_speech, dest="ja")
+translated_speech_text = translator.translate(generated_text_from_speech, dest="ja").text
 print(translated_speech_text)
 
+input_text = "There is "
+for word in generated_text_from_movie:
+    input_text += word
+    input_text += ", "
+input_text += "and they said '"
+input_text += translated_speech_text
+input_text += "'."
+
 # テキストから画像を生成
-ti_utils.generate_image_from_text(generated_text_from_speech)
+ti_utils.generate_image_from_text(input_text)
