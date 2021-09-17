@@ -48,5 +48,7 @@ input_text += "and they said '"
 input_text += translated_speech_text
 input_text += "'."
 
+
+
 # テキストから画像を生成
 ti_utils.generate_image_from_text(input_text)

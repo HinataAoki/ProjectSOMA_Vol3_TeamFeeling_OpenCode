@@ -2,6 +2,7 @@
 # import matplotlib.pyplot as plt
 
 import io
+import gc
 import os
 import cv2
 import glob
@@ -11,7 +12,6 @@ from six import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 
 import tensorflow as tf
-from googletrans import Translator
 
 from object_detection.utils import label_map_util
 from object_detection.utils import config_util
@@ -34,6 +34,8 @@ def load_image_into_numpy_array(path):
   img_data = tf.io.gfile.GFile(path, 'rb').read()
   image = Image.open(BytesIO(img_data))
   (im_width, im_height) = image.size
+  del img_data
+  gc.collect()
   return np.array(image.getdata()).reshape(
       (im_height, im_width, 3)).astype(np.uint8)
 
@@ -63,6 +65,9 @@ def get_model_detection_function(model):
     prediction_dict = model.predict(image, shapes)
     detections = model.postprocess(prediction_dict, shapes)
 
+    del image
+    gc.collect()
+
     return detections, prediction_dict, tf.reshape(shapes, [-1])
 
   return detect_fn
@@ -77,6 +82,8 @@ def label_out(classes, scores, label_map_dict ,threshold=0.5):
       output+=keys
     else:
       break
+  del scores, classes, label_map_dict, threshold
+  gc.collect()
   return output
 
 
@@ -101,6 +108,8 @@ def save_all_frames(video_path, dir_path, basename, ext='jpg'):
                 cv2.imwrite('{}_{}.{}'.format(base_path, str(tn).zfill(digit), ext), frame)
             n += 1
         else:
+            del ret, frame, tn, n
+            gc.collect()
             return
 
 
@@ -158,7 +167,10 @@ def movie_to_label(image_path, threshold=0.5):
     keypoint_scores = detections['detection_keypoint_scores'][0].numpy()
 
   #ラベルを出力
-  return label_out((detections['detection_classes'][0].numpy() + label_id_offset).astype(int),detections['detection_scores'][0].numpy(), label_map_dict, threshold)
+  output = label_out((detections['detection_classes'][0].numpy() + label_id_offset).astype(int),detections['detection_scores'][0].numpy(), label_map_dict, threshold)
+  del detections, label_id_offset, label_map_dict, threshold, input_tensor, predictions_dict, shapes, image_np_with_detections, keypoints, keypoint_scores, pipeline_config, model_dir, image_np, ckpt, detect_fn
+  gc.collect()
+  return output
 
   '''
   viz_utils.visualize_boxes_and_labels_on_image_array(
@@ -191,4 +203,6 @@ def movie_to_text(movie_path, img_dir="temp", img_name="temp", threthold=0.5):
   for i in range(len(frames)):
     print(f"[{str(i)}/{str(len(frames))}] Start...")
     output += movie_to_label(frames[i])
+  del frames, movie_path, img_dir, img_name, threthold
+  gc.collect()
   return list(set(output))
