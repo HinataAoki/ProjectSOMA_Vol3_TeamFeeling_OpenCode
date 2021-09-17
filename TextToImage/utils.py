@@ -18,8 +18,6 @@ import requests
 import cv2
 
 def generate_image_from_text(generated_text):
-
-
     # 4.CLIPのモデル化
     # ! pip install ftfy regex
     model, preprocess = clip.load('ViT-B/32', jit=True)  
@@ -127,42 +125,44 @@ def generate_image_from_text(generated_text):
     video.release()
     print('written')
 
-# 画像表示・保存
-def displ(img, num=0):
-    display.clear_output(True)
-    img = np.array(img)[:,:,:]
-    img = np.transpose(img, (1, 2, 0))
-    imageio.imwrite('output/output%s.png'%num, np.array(img))
-    return display.Image('output/output%s.png'%num)
+    # 画像表示・保存
+    def displ(img, num=0):
+        display.clear_output(True)
+        img = np.array(img)[:,:,:]
+        img = np.transpose(img, (1, 2, 0))
+        imageio.imwrite('output/output%s.png'%num, np.array(img))
+        return display.Image('output/output%s.png'%num)
 
-# 画像のランダム切り出し
-def augment(out, cutn=12):
-    p_s = []
-    for ch in range(cutn):
-        sizey = int(torch.zeros(1,).uniform_(.5, .99)*sideY)
-        sizex = int(torch.zeros(1,).uniform_(.5, .99)*sideX)
-        offsetx = torch.randint(0, sideX - sizex, ())
-        offsety = torch.randint(0, sideY - sizey, ())
-        apper = out[:, :, offsetx:offsetx + sizex, offsety:offsety + sizey]
-        apper = apper + .1*torch.rand(1,1,1,1).cuda()*torch.randn_like(apper, requires_grad=True)
-        apper = torch.nn.functional.interpolate(apper, (224,224), mode='bilinear')
-        p_s.append(apper)
-    into = augs(torch.cat(p_s, 0))
-    return into
+    # 画像のランダム切り出し
+    def augment(out, cutn=12):
+        im_shape = [512, 512, 3]
+        sideX, sideY, channels = im_shape
+        p_s = []
+        for ch in range(cutn):
+            sizey = int(torch.zeros(1,).uniform_(.5, .99)*sideY)
+            sizex = int(torch.zeros(1,).uniform_(.5, .99)*sideX)
+            offsetx = torch.randint(0, sideX - sizex, ())
+            offsety = torch.randint(0, sideY - sizey, ())
+            apper = out[:, :, offsetx:offsetx + sizex, offsety:offsety + sizey]
+            apper = apper + .1*torch.rand(1,1,1,1).cuda()*torch.randn_like(apper, requires_grad=True)
+            apper = torch.nn.functional.interpolate(apper, (224,224), mode='bilinear')
+            p_s.append(apper)
+        into = augs(torch.cat(p_s, 0))
+        return into
 
-# パラメータの設定
-class Pars(torch.nn.Module):
-    def __init__(self):
-        super(Pars, self).__init__()
-        hots = torch.nn.functional.one_hot((torch.arange(0, 8192).to(torch.int64)), num_classes=8192)
-        rng = torch.zeros(1, 64*64, 8192).uniform_()
-        for i in range(64*64):
-            rng[0,i] = hots[[np.random.randint(8191)]]
-        rng = rng.permute(0, 2, 1)
-        self.normu = torch.nn.Parameter(rng.cuda().view(1, 8192, 64*64))
-        
-    def forward(self):
-        tau_value = 2.0      
-        normu = torch.nn.functional.gumbel_softmax(self.normu.reshape(1,64*64,8192), dim=1, tau=tau_value).view(1, 8192, 64, 64)
-        return normu
+    # パラメータの設定
+    class Pars(torch.nn.Module):
+        def __init__(self):
+            super(Pars, self).__init__()
+            hots = torch.nn.functional.one_hot((torch.arange(0, 8192).to(torch.int64)), num_classes=8192)
+            rng = torch.zeros(1, 64*64, 8192).uniform_()
+            for i in range(64*64):
+                rng[0,i] = hots[[np.random.randint(8191)]]
+            rng = rng.permute(0, 2, 1)
+            self.normu = torch.nn.Parameter(rng.cuda().view(1, 8192, 64*64))
+            
+        def forward(self):
+            tau_value = 2.0      
+            normu = torch.nn.functional.gumbel_softmax(self.normu.reshape(1,64*64,8192), dim=1, tau=tau_value).view(1, 8192, 64, 64)
+            return normu
 
