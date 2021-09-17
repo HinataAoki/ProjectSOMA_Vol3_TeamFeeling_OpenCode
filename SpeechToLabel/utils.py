@@ -1,3 +1,4 @@
+import gc
 import ffmpeg
 import speech_recognition as sr
 
@@ -15,4 +16,6 @@ def voice_to_text(movie_path,voice_path,text_path=None):
       open_text = open(text_path, "x", encoding="utf_8")
       open_text.write(text)
       open_text.close()
+    del stream, movie_path, voice_path, text_path, source, audio
+    gc.collect()
     return text
