@@ -1,5 +1,6 @@
 import os
 import gc
+import torch
 import argparse
 from Record import record
 from MovieToLabel import utils as ml_utils
@@ -53,6 +54,7 @@ if os.path.exists(movie_path):
     input_text += "'."
 
     gc.collect()
+    torch.cuda.empty_cache()
 
     # テキストから画像を生成
     ti_utils.generate_image_from_text(input_text)

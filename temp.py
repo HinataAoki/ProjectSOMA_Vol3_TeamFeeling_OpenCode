@@ -1,3 +1,4 @@
+import os
 import gc
 import argparse
 from Record import record
@@ -25,6 +26,9 @@ def make_text_from_movie(movie_path, voice_path, img_dir, img_name, threthold):
     print("Start Recording...")
     # record.make_record(path=movie_path)
 
+    if not os.path.exists(movie_path):
+        print("Movie file does not exist!")
+        return
     # 動画から状況を説明するテキストを生成
     print("Start making text from movie...")
     generated_text_from_movie = ml_utils.movie_to_text(movie_path, img_dir="temp", img_name="temp", threthold=0.5)
@@ -33,6 +37,8 @@ def make_text_from_movie(movie_path, voice_path, img_dir, img_name, threthold):
 
     # Speech to Text
     print("Start making text from voice...")
+    if os.path.exists(voice_path):
+        os.remove(voice_path)
     generated_text_from_speech = sl_utils.voice_to_text(movie_path, voice_path)
     print("Generated text from voice is ")
     print(generated_text_from_speech)
